@@ -222,6 +222,45 @@ title({'no correction',num2str(p)});
 %Save figure
 saveas(gcf, [FigDirect filesep 'DistalvSECorrDistrib_NoCorrection','.svg'],'svg');
 
+% Violin plot of distributions 
+figure
+Colors(1).Color = BothColor;
+Colors(2).Color = DistalColor;
+fontsize=10;
+fontname='Arial';
+x_width=3; y_width=2.25;
+x_widthsplit=1.5; y_widthsplit=1.125;
+xSize = 7; ySize = 6; xLeft = 0.5; yTop = 0.5;
+
+set(gca,'Box','off', 'FontName',fontname,'FontSize',fontsize);
+set(gcf,'PaperUnits','inches','PaperPosition',[0 0 x_width y_width]);
+
+PlaceCounter = 1;
+
+
+for cc = 1:length(ConstructList)
+    PointsUsed = length([TrueCorrelation(:,cc)]);
+    h=violinPlot([TrueCorrelation(:,cc)],'xValues',[PlaceCounter],'color',Colors(cc).Color,'histOpt',1.1,'divFactor',1.5,'showMM',0);
+    hold on 
+    % overlay correlation points in individual nuclei
+    scatter((PlaceCounter.*ones(PointsUsed,1)),(TrueCorrelation(:,cc)),5,'k','MarkerFaceColor',Colors(cc).Color,'jitter','on','jitterAmount',0.3);
+    y=MedValues(cc);
+    q=line([PlaceCounter-0.5,PlaceCounter+0.5],[y,y]); q.Color='k'; q.LineWidth=2;
+    PlaceCounter = PlaceCounter +1;
+    NinPrct(cc) = prctile(abs(TrueCorrelation(:,cc)),99);
+end
+%use 99th percentile of correlations 
+LimUsed = (max(NinPrct))*-1;
+ylim([LimUsed 0.7]); %0.7 is emperically used based on data
+set(gca,'Box','off', 'FontName',fontname,'FontSize',fontsize);
+set(gcf,'PaperUnits','inches','PaperPosition',[0 0 x_width y_width]);
+% Get same tick numbers as simulated data
+set(gca,'YTick',[-0.4:0.25:0.6])
+ylabel('Bcd level - MS2 slope correlation');
+
+%Save figure
+%saveas(gcf, [FigDirect filesep 'DistalvSECorrDistrib_Violins','.svg'],'svg');
+
 
 %% Generate example Bcd - MS2 slope traces 
 
